@@ -10,6 +10,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+
 
 // video to load jar
 //https://www.youtube.com/watch?v=QAJ09o3Xl_0
@@ -53,9 +56,9 @@ public class ReadJson implements ActionListener{
     private JMenuBar mb;
     private JMenu file, edit, help;
     private JMenuItem cut, copy, paste, selectAll;
-    public int rock = 1;
-    public int paper = 2;
-    public int scissors = 3;
+    public int catsScore = 0;
+    public int dogsScore = 0;
+    private int index = 0;
 
     //need buttons to pick cat, pick dog, and play
 
@@ -121,12 +124,19 @@ public class ReadJson implements ActionListener{
 
         JSONParser parser = new JSONParser();
         //System.out.println(str);
-        org.json.simple.JSONArray jsonARRAY = (org.json.simple.JSONArray) parser.parse(totlaJson);
-        System.out.println(jsonARRAY);
+        org.json.simple.JSONArray jsonObjectArray = (org.json.simple.JSONArray) parser.parse(totlaJson);
+        System.out.println(jsonObjectArray);
 
         try {
-            JSONObject cat = (JSONObject) jsonARRAY.get(0);
+            JSONObject cat = (JSONObject) jsonObjectArray.get(0);
             String url = (String)cat.get("url");
+
+            System.out.println("error" + jsonObjectArray.get(0));
+            JSONObject newCat = (JSONObject) jsonObjectArray.get(0);
+           // int startOfUrl = newCat.indexOf("https");
+           // int endOfUrl = newCat.indexOf("width");
+            String catUrl = (String) newCat.get("url");
+            System.out.println(catUrl);
 
 //            org.json.simple.JSONArray msg = (org.json.simple.JSONArray) jsonARRAY.get("url");
 //            int n =   msg.size(); //(msg).length();
@@ -163,15 +173,17 @@ public class ReadJson implements ActionListener{
         catPanel = new JPanel();
         catPanel.setLayout(new BorderLayout());
         //add place for image
-        catCharacter = new JLabel("cat");
+        catCharacter = new JLabel("cat pic");
         catCharacter.setHorizontalAlignment(JLabel.CENTER);
         catPanel.add(catCharacter, BorderLayout.CENTER);
+        catPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         //needs button
 
         dogPanel = new JPanel();
         dogPanel.setLayout(new BorderLayout());
+        dogPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         //add place for image
-        dogCharacter = new JLabel("dog");
+        dogCharacter = new JLabel("dog pic");
         dogCharacter.setHorizontalAlignment(JLabel.CENTER);
         dogPanel.add(dogCharacter, BorderLayout.CENTER);
         //needs button
@@ -180,12 +192,15 @@ public class ReadJson implements ActionListener{
         middlePanel.setLayout(new GridLayout(2, 1));
         choicePanel = new JPanel();
         choicePanel.setLayout(new GridLayout(1, 2));
-        catChoice = new JLabel("scissors");
+        catChoice = new JLabel("thing");
         catChoice.setHorizontalAlignment(JLabel.CENTER);
-        dogChoice = new JLabel("paper");
+        catChoice.setBorder(BorderFactory.createLineBorder(Color.black));
+        dogChoice = new JLabel("thing");
         dogChoice.setHorizontalAlignment(JLabel.CENTER);
+        dogChoice.setBorder(BorderFactory.createLineBorder(Color.black));
         choicePanel.add(catChoice);
         choicePanel.add(dogChoice);
+        choicePanel.setBorder(BorderFactory.createLineBorder(Color.black));
         winner = new JTextArea();
         winner.setBounds(50, 5, WIDTH-100, HEIGHT-50);
         winner.setText("winner");
@@ -236,25 +251,32 @@ public class ReadJson implements ActionListener{
         //cat score
         catScorePanel = new JPanel();
         catScorePanel.setLayout(new GridLayout(2, 1));
-        catScoreLabel = new JLabel("cat score");
+        catScoreLabel = new JLabel("cat score:");
         catScoreLabel.setHorizontalAlignment(JLabel.CENTER);
+        catScoreLabel.setBorder(BorderFactory.createLineBorder(Color.black));
         catScore = new JTextArea();
         catScore.setBounds(50, 5, WIDTH-100, HEIGHT-50);
-        catScore.setText("2");
+        catScore.setText(Integer.toString(catsScore));
+        catScore.setBorder(BorderFactory.createLineBorder(Color.black));
         catScorePanel.add(catScoreLabel);
         catScorePanel.add(catScore);
+        catScorePanel.setBorder(BorderFactory.createLineBorder(Color.black));
         //dog score
         dogScorePanel = new JPanel();
         dogScorePanel.setLayout(new GridLayout(2, 1));
-        dogScoreLabel = new JLabel("dog score");
+        dogScoreLabel = new JLabel("dog score:");
         dogScoreLabel.setHorizontalAlignment(JLabel.CENTER);
+        dogScoreLabel.setBorder(BorderFactory.createLineBorder(Color.black));
         dogScore = new JTextArea();
-        dogScore.setBounds(50, 5, WIDTH-100, HEIGHT-50);
-        dogScore.setText("1");
+        dogScore.setBorder(BorderFactory.createLineBorder(Color.black));
+        //dogScore.setBounds(50, 5, WIDTH-100, HEIGHT-50);
+        dogScore.setText(Integer.toString(dogsScore));
         dogScorePanel.add(dogScoreLabel);
         dogScorePanel.add(dogScore);
-        miniScorePanel.add(catScoreLabel);
-        miniScorePanel.add(dogScoreLabel);
+        dogScorePanel.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        miniScorePanel.add(catScorePanel);
+        miniScorePanel.add(dogScorePanel);
         fullScorePanel.add(miniScorePanel, BorderLayout.CENTER);
         bottomPanel.add(fullScorePanel, BorderLayout.CENTER);
 
@@ -283,7 +305,6 @@ public class ReadJson implements ActionListener{
         go.addActionListener(new ButtonClickListener());
         mf.setVisible(true);
 
-
     }
 
     @Override
@@ -301,12 +322,69 @@ public class ReadJson implements ActionListener{
     private class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             System.out.println("hi");
+            String output = "abc";
+            String totlaJson="";
+            boolean g = true;
+
+            try {
+
+                URL url = new URL("https://api.thecatapi.com/v1/images/search?limit=10");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                if (conn.getResponseCode() != 200) {
+                    throw new RuntimeException("Failed : HTTP error code : "
+                            + conn.getResponseCode());
+                }
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        (conn.getInputStream())));
+
+                System.out.println("Output from Server .... \n");
+                while ((output = br.readLine()) != null) {
+                    System.out.println(output);
+                    totlaJson += output;
+                }
+
+                conn.disconnect();
+
+            } catch (MalformedURLException ea) {
+                ea.printStackTrace();
+
+            } catch (IOException i) {
+                i.printStackTrace();
+            }
+
+            JSONParser parser = new JSONParser();
+            //System.out.println(str);
+            try {
+                org.json.simple.JSONArray jsonObjectArray = (org.json.simple.JSONArray) parser.parse(totlaJson);
+//                System.out.println(jsonObjectArray);
+                String command = e.getActionCommand();
+
+                if (command.equals("new cat")) {
+                    index++;
+//                    if (index == jsonObjectArray.size()){
+//                        index=0;
+//                    }
+                    System.out.println(jsonObjectArray.size());
+                    System.out.println(jsonObjectArray.get(index));
+                    JSONObject newCat = (JSONObject) jsonObjectArray.get(index);
+                    System.out.println(index);
+                    String catUrl = (String)newCat.get("url");
+                    System.out.println(catUrl);
+                }
+            }
+            catch (ParseException ea) {
+                ea.printStackTrace();
+            }
 
             String command = e.getActionCommand();
             if(command.equals("go")){
 
-                int intCatChoice = (int)Math.random()*3+1;
-                int intDogChoice = (int)Math.random()*3+1;
+                int intCatChoice = (int)(Math.random()*3)+1;
+                int intDogChoice = (int)(Math.random()*3)+1;
+                System.out.println(intCatChoice);
+                System.out.println(intDogChoice);
                 if(intCatChoice==1) {
                     catChoice.setText("rock");
                 } else if (intCatChoice==2) {
@@ -321,6 +399,38 @@ public class ReadJson implements ActionListener{
                 }else{
                     dogChoice.setText("scissors");
                 }
+
+                //1 rocks
+                //2 paper
+                // 3 sciceisorws
+
+                if(intCatChoice==intDogChoice){
+                    winner.setText("it's a tie!");
+                } else if (intCatChoice==1 && intDogChoice==2){
+                    winner.setText("dogs win!");
+                    dogsScore+=1;
+                } else if (intCatChoice==1 && intDogChoice==3) {
+                    winner.setText("cats win!");
+                    catsScore+=1;
+                } else if (intCatChoice==2 && intDogChoice==1) {
+                    winner.setText("cats win!");
+                    catsScore+=1;
+                } else if (intCatChoice==2 && intDogChoice==3) {
+                    System.out.println(" cat paper dog sci");
+                    winner.setText("dogs win!");
+                    dogsScore+=1;
+                } else if (intCatChoice==3 && intDogChoice==1) {
+                    winner.setText("dogs win!");
+                    dogsScore+=1;
+                } else{
+                    //(intCatChoice==3 && intDogChoice==2)
+                    System.out.println("cat sci 3 dog 2 paper");
+                    winner.setText("cats win!");
+                    catsScore+=1;
+                }
+                catScore.setText(Integer.toString(catsScore));
+                dogScore.setText(Integer.toString(dogsScore));
+
             }
 
 
