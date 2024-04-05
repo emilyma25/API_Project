@@ -142,6 +142,7 @@ public class ReadJson implements ActionListener{
 //            }
             //String name= (String)jsonObject.get("height");
             System.out.println(url);
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -361,123 +362,160 @@ public class ReadJson implements ActionListener{
 
     private class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            System.out.println("hi");
-            String output = "abc";
-            String totlaJson="";
-            boolean g = true;
+            String command = e.getActionCommand();
+            if(command.equals("new cat")) {
+                System.out.println("hi");
+                String output = "abc";
+                String totlaJson = "";
+                boolean g = true;
 
-            try {
+                try {
 
-                URL url = new URL("https://api.thecatapi.com/v1/images/search?limit=10");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "application/json");
-                if (conn.getResponseCode() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : "
-                            + conn.getResponseCode());
+                    URL url = new URL("https://api.thecatapi.com/v1/images/search?limit=10");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("Accept", "application/json");
+                    if (conn.getResponseCode() != 200) {
+                        throw new RuntimeException("Failed : HTTP error code : "
+                                + conn.getResponseCode());
+                    }
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            (conn.getInputStream())));
+
+                    System.out.println("Output from Server .... \n");
+                    while ((output = br.readLine()) != null) {
+                        System.out.println(output);
+                        totlaJson += output;
+                    }
+
+                    conn.disconnect();
+
+                } catch (MalformedURLException ea) {
+                    ea.printStackTrace();
+
+                } catch (IOException i) {
+                    i.printStackTrace();
                 }
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        (conn.getInputStream())));
 
-                System.out.println("Output from Server .... \n");
-                while ((output = br.readLine()) != null) {
-                    System.out.println(output);
-                    totlaJson += output;
-                }
-
-                conn.disconnect();
-
-            } catch (MalformedURLException ea) {
-                ea.printStackTrace();
-
-            } catch (IOException i) {
-                i.printStackTrace();
-            }
-
-            JSONParser parser = new JSONParser();
-            //System.out.println(str);
-            try {
-                org.json.simple.JSONArray jsonObjectArray = (org.json.simple.JSONArray) parser.parse(totlaJson);
+                JSONParser parser = new JSONParser();
+                //System.out.println(str);
+                try {
+                    org.json.simple.JSONArray jsonObjectArray = (org.json.simple.JSONArray) parser.parse(totlaJson);
 //                System.out.println(jsonObjectArray);
-                String command = e.getActionCommand();
 
-                if (command.equals("new cat")) {
-                    index++;
-//                    if (index == jsonObjectArray.size()){
-//                        index=0;
-//                    }
                     System.out.println(jsonObjectArray.size());
-                    System.out.println(jsonObjectArray.get(index));
-                    JSONObject newCat = (JSONObject) jsonObjectArray.get(index);
-                    String catUrl = (String)newCat.get("url");
+                    System.out.println(jsonObjectArray.get(0));
+                    JSONObject newCat = (JSONObject) jsonObjectArray.get(0);
+                    String catUrl = (String) newCat.get("url");
                     System.out.println(catUrl);
 
                     catCharacter.setText(catUrl);
+
+                } catch (ParseException ea) {
+                    ea.printStackTrace();
                 }
             }
-            catch (ParseException ea) {
-                ea.printStackTrace();
-            }
-
 
             //dog api
-            String dogoutput = "abc";
-            String dogtotlaJson="";
-            try {
+            if(command.equals("new dog")) {
+                String dogoutput = "abc";
+                String dogtotlaJson = "";
+                try {
 
-                URL url = new URL("https://random.dog/woof.json");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "application/json");
-
-                if (conn.getResponseCode() != 200) {
-
-                    throw new RuntimeException("Failed : HTTP error code : "
-                            + conn.getResponseCode());
-                }
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        (conn.getInputStream())));
-
-
-                System.out.println("Output from Server .... \n");
-                while ((dogoutput = br.readLine()) != null) {
-                    System.out.println(dogoutput);
-                    dogtotlaJson+=dogoutput;
-                }
-
-                conn.disconnect();
-
-            } catch (MalformedURLException a) {
-                a.printStackTrace();
-
-            } catch (IOException a) {
-                a.printStackTrace();
-            }
-
-            JSONParser dogparser = new JSONParser();
-
-            try{
-                org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) dogparser.parse(dogtotlaJson);
-                System.out.println(jsonObject);
-
-                String command = e.getActionCommand();
-
-                if(command.equals("new dog")){
                     URL url = new URL("https://random.dog/woof.json");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("Accept", "application/json");
+
+                    if (conn.getResponseCode() != 200) {
+
+                        throw new RuntimeException("Failed : HTTP error code : "
+                                + conn.getResponseCode());
+                    }
+
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            (conn.getInputStream())));
+
+
+                    System.out.println("Output from Server .... \n");
+                    while ((dogoutput = br.readLine()) != null) {
+                        System.out.println(dogoutput);
+                        dogtotlaJson += dogoutput;
+                    }
+
+                    conn.disconnect();
+
+                } catch (MalformedURLException a) {
+                    a.printStackTrace();
+
+                } catch (IOException a) {
+                    a.printStackTrace();
                 }
 
-                String dog = (String) jsonObject.get("url");
-                System.out.println(dog);
+                JSONParser dogparser = new JSONParser();
 
-                dogCharacter.setText(dog);
+                try {
+                    org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) dogparser.parse(dogtotlaJson);
+                    //System.out.println(jsonObject);
 
+                    String dog = (String) jsonObject.get("url");
+                    while(dog.contains(".mp4")||dog.contains(".gif")||dog.contains("webm")){
+                        String dogoutput2 = "abc";
+                        String dogtotlaJson2 = "";
+                        try {
+
+                            URL url = new URL("https://random.dog/woof.json");
+                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                            conn.setRequestMethod("GET");
+                            conn.setRequestProperty("Accept", "application/json");
+
+                            if (conn.getResponseCode() != 200) {
+
+                                throw new RuntimeException("Failed : HTTP error code : "
+                                        + conn.getResponseCode());
+                            }
+
+                            BufferedReader br = new BufferedReader(new InputStreamReader(
+                                    (conn.getInputStream())));
+
+
+                            System.out.println("Output from Server .... \n");
+                            while ((dogoutput2 = br.readLine()) != null) {
+                                System.out.println(dogoutput2);
+                                dogtotlaJson2 += dogoutput2;
+                            }
+
+                            conn.disconnect();
+
+                        } catch (MalformedURLException a) {
+                            a.printStackTrace();
+
+                        } catch (IOException a) {
+                            a.printStackTrace();
+                        }
+
+                        JSONParser dogparser2 = new JSONParser();
+
+                        try {
+                            org.json.simple.JSONObject jsonObject2 = (org.json.simple.JSONObject) dogparser2.parse(dogtotlaJson2);
+                            //System.out.println(jsonObject);
+
+                            dog = (String) jsonObject2.get("url");
+
+
+                    }catch (Exception a) {
+                            a.printStackTrace();
+                        }
+                    }
+                    System.out.println(dog);
+
+                    dogCharacter.setText(dog);
+
+
+                } catch (Exception a) {
+                    a.printStackTrace();
+                }
             }
-            catch (Exception a) {
-                a.printStackTrace();
-            }
-
-            String command = e.getActionCommand();
             if(command.equals("go")){
 
                 int intCatChoice = (int)(Math.random()*3)+1;
