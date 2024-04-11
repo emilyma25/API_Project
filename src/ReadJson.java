@@ -10,6 +10,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
@@ -79,10 +84,31 @@ public class ReadJson implements ActionListener{
 
     }
 
+    public static void saveImage(String imageUrl, String destinationFile) throws IOException {
+        URL url = new URL(imageUrl);
+        InputStream is = url.openStream();
+        OutputStream os = new FileOutputStream(destinationFile);
+
+        byte[] b = new byte[2048];
+        int length;
+
+        while ((length = is.read(b)) != -1) {
+            os.write(b, 0, length);
+        }
+
+        is.close();
+        os.close();
+    }
+
 
     public ReadJson() {
         prepareGUI();
         showEventDemo();
+
+        String imageUrl = "https://cdn2.thecatapi.com/images/5nm.jpg";
+        String destinationFile = "image.jpg";
+
+        saveImage(imageUrl, destinationFile);
     }
 
     public static void pull() throws ParseException {
@@ -510,6 +536,10 @@ public class ReadJson implements ActionListener{
                     System.out.println(dog);
 
                     dogCharacter.setText(dog);
+                    Image image = null;
+                    image = ImageIO.read(dog);
+                    jXImageView1.setImage(image);
+
 
 
                 } catch (Exception a) {
