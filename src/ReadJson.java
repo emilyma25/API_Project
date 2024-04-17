@@ -3,17 +3,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import java.io.FileOutputStream;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferStrategy;
+import java.awt.*;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -41,6 +43,10 @@ public class ReadJson implements ActionListener{
     private JTextArea dogScore;
     private JLabel catScoreLabel;
     private JPanel choicePanel;
+    private JPanel catPic;
+
+    private JPanel dogPic;
+
     private JLabel dogChoice;
     private JLabel catChoice;
     private JTextArea winner;
@@ -84,31 +90,13 @@ public class ReadJson implements ActionListener{
 
     }
 
-    public static void saveImage(String imageUrl, String destinationFile) throws IOException {
-        URL url = new URL(imageUrl);
-        InputStream is = url.openStream();
-        OutputStream os = new FileOutputStream(destinationFile);
 
-        byte[] b = new byte[2048];
-        int length;
-
-        while ((length = is.read(b)) != -1) {
-            os.write(b, 0, length);
-        }
-
-        is.close();
-        os.close();
-    }
 
 
     public ReadJson() {
         prepareGUI();
         showEventDemo();
 
-        String imageUrl = "https://cdn2.thecatapi.com/images/5nm.jpg";
-        String destinationFile = "image.jpg";
-
-        saveImage(imageUrl, destinationFile);
     }
 
     public static void pull() throws ParseException {
@@ -240,9 +228,35 @@ public class ReadJson implements ActionListener{
         catPanel = new JPanel();
         catPanel.setLayout(new BorderLayout());
         //add place for image
-        catCharacter = new JLabel("cat pic");
-        catCharacter.setHorizontalAlignment(JLabel.CENTER);
-        catPanel.add(catCharacter, BorderLayout.CENTER);
+        catPic = new JPanel();
+
+        try {
+            BufferedImage catmyPicture = ImageIO.read(new File("cat pic api.png"));
+            ImageIcon catimageIcon = new ImageIcon(new ImageIcon("cat pic api.png").getImage().getScaledInstance(220, 300, Image.SCALE_DEFAULT));
+            JLabel catpicLabel = new JLabel(catimageIcon);
+            catPic.add(catpicLabel);
+        }
+        catch (IOException e){
+            System.out.println(e);
+        }
+
+        // creates a canvas which is a blank rectangular area of the screen onto which the application can draw
+        // and trap input events (Mouse and Keyboard events)
+//        catcanvas = new Canvas();
+//        catcanvas.setBounds(0, 0, WIDTH, HEIGHT);
+//        catcanvas.setIgnoreRepaint(true);
+//        catimage = Toolkit.getDefaultToolkit().getImage("cat pic api.png");
+//
+//        catPic.add(catcanvas);  // adds the canvas to the panel.
+
+        // sets up things so the screen displays images nicely.
+//        catcanvas.createBufferStrategy(2);
+//        bufferStrategy = catcanvas.getBufferStrategy();
+//        catcanvas.requestFocus();
+//        System.out.println("DONE cat graphic setup");
+//        catCharacter = new JLabel("cat pic");
+//        catCharacter.setHorizontalAlignment(JLabel.CENTER);
+        catPanel.add(catPic, BorderLayout.CENTER);
         catPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         //needs button
 
@@ -250,9 +264,35 @@ public class ReadJson implements ActionListener{
         dogPanel.setLayout(new BorderLayout());
         dogPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         //add place for image
-        dogCharacter = new JLabel("dog pic");
-        dogCharacter.setHorizontalAlignment(JLabel.CENTER);
-        dogPanel.add(dogCharacter, BorderLayout.CENTER);
+        dogPic = new JPanel();
+
+
+        //dogimage = Toolkit.getDefaultToolkit().getImage("dog pic api.png");
+
+//        dogCharacter = new JLabel("dog pic");
+//        dogCharacter.setHorizontalAlignment(JLabel.CENTER);
+        try {
+            BufferedImage dogmyPicture = ImageIO.read(new File("dog pic api.png"));
+            ImageIcon dogimageIcon = new ImageIcon(new ImageIcon("dog pic api.png").getImage().getScaledInstance(300, 175, Image.SCALE_DEFAULT));
+
+            JLabel dogpicLabel = new JLabel(dogimageIcon);
+            dogPic.add(dogpicLabel);
+
+        }
+        catch (IOException e){
+            System.out.println(e);
+        }
+
+
+//        dogPic.add(dogcanvas);  // adds the canvas to the panel.
+//
+//        // sets up things so the screen displays images nicely.
+//        dogcanvas.createBufferStrategy(2);
+//        bufferStrategy = dogcanvas.getBufferStrategy();
+//        dogcanvas.requestFocus();
+//        System.out.println("DONE dog graphic setup");
+
+        dogPanel.add(dogPic, BorderLayout.CENTER);
         //needs button
 
         middlePanel = new JPanel();
@@ -260,9 +300,11 @@ public class ReadJson implements ActionListener{
         choicePanel = new JPanel();
         choicePanel.setLayout(new GridLayout(1, 2));
         catChoice = new JLabel("thing");
+        catChoice.setFont(new Font("Serif", Font.PLAIN, 14));
         catChoice.setHorizontalAlignment(JLabel.CENTER);
         catChoice.setBorder(BorderFactory.createLineBorder(Color.black));
         dogChoice = new JLabel("thing");
+        dogChoice.setFont(new Font("Serif", Font.PLAIN, 14));
         dogChoice.setHorizontalAlignment(JLabel.CENTER);
         dogChoice.setBorder(BorderFactory.createLineBorder(Color.black));
         choicePanel.add(catChoice);
@@ -314,11 +356,14 @@ public class ReadJson implements ActionListener{
         miniScorePanel.setLayout(new GridLayout(1, 2));
         scoreLabel = new JLabel("score:");
         scoreLabel.setHorizontalAlignment(JLabel.CENTER);
-        fullScorePanel.add(scoreLabel);
+        fullScorePanel.add(scoreLabel, BorderLayout.NORTH);
+        scoreLabel.setFont(new Font("Serif", Font.PLAIN, 15));
+
         //cat score
         catScorePanel = new JPanel();
         catScorePanel.setLayout(new GridLayout(2, 1));
         catScoreLabel = new JLabel("cat score:");
+        catScoreLabel.setFont(new Font("Serif", Font.PLAIN, 17));
         catScoreLabel.setHorizontalAlignment(JLabel.CENTER);
         catScoreLabel.setBorder(BorderFactory.createLineBorder(Color.black));
         catScore = new JTextArea();
@@ -332,6 +377,7 @@ public class ReadJson implements ActionListener{
         dogScorePanel = new JPanel();
         dogScorePanel.setLayout(new GridLayout(2, 1));
         dogScoreLabel = new JLabel("dog score:");
+        dogScoreLabel.setFont(new Font("Serif", Font.PLAIN, 17));
         dogScoreLabel.setHorizontalAlignment(JLabel.CENTER);
         dogScoreLabel.setBorder(BorderFactory.createLineBorder(Color.black));
         dogScore = new JTextArea();
@@ -536,10 +582,6 @@ public class ReadJson implements ActionListener{
                     System.out.println(dog);
 
                     dogCharacter.setText(dog);
-                    Image image = null;
-                    image = ImageIO.read(dog);
-                    jXImageView1.setImage(image);
-
 
 
                 } catch (Exception a) {
