@@ -12,7 +12,6 @@ import java.net.URL;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
-import java.awt.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.io.IOException;
@@ -32,15 +31,22 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.swing.*;
 
 // Program for print data in JSON format.
 public class ReadJson implements ActionListener{
 
     private JFrame mf;
     private JLabel dogScoreLabel;
-    private JTextArea catScore;
-    private JTextArea dogScore;
+    JLabel catpicLabel;
+    JLabel dogpicLabel;
+    private int  newcatheight;
+    private int  newcatwidth;
+    private int newdogheight;
+    private int newdogwidth;
+//    private JTextArea catScore;
+//    private JTextArea dogScore;
+    private JLabel catScore;
+    private JLabel dogScore;
     private JLabel catScoreLabel;
     private JPanel choicePanel;
     private JPanel catPic;
@@ -73,14 +79,17 @@ public class ReadJson implements ActionListener{
 
     //need buttons to pick cat, pick dog, and play
 
-    public static void main(String args[]) throws ParseException {
+    public static void main(String args[]) throws ParseException{
         // In java JSONObject is used to create JSON object
         // which is a subclass of java.util.HashMap.
 
         JSONObject file = new JSONObject();
-        file.put("Full Name", "Ritu Sharma");
-        file.put("Roll No.", new Integer(1704310046));
-        file.put("Tution Fees", new Double(65400));
+//        ReadJson readjson = new ReadJson();
+//        readjson.addImage();
+
+//        file.put("Full Name", "Ritu Sharma");
+//        file.put("Roll No.", new Integer(1704310046));
+//        file.put("Tution Fees", new Double(65400));
 
 
         // To print in JSON format.
@@ -231,10 +240,40 @@ public class ReadJson implements ActionListener{
         catPic = new JPanel();
 
         try {
-            BufferedImage catmyPicture = ImageIO.read(new File("cat pic api.png"));
-            ImageIcon catimageIcon = new ImageIcon(new ImageIcon("cat pic api.png").getImage().getScaledInstance(220, 300, Image.SCALE_DEFAULT));
-            JLabel catpicLabel = new JLabel(catimageIcon);
-            catPic.add(catpicLabel);
+//            BufferedImage catmyPicture = ImageIO.read(new File("cat pic api.png"));
+//            ImageIcon catimageIcon = new ImageIcon(new ImageIcon("cat pic api.png").getImage().getScaledInstance(220, 300, Image.SCALE_DEFAULT));
+
+            //new
+            //URL url = new URL("https://cdn2.thecatapi.com/images/MTgzMzAyOA.jpg");
+            URL url = new URL("https://cdn2.thecatapi.com/images/8f6.jpg");
+            BufferedImage ErrorImage = ImageIO.read(new File("cat pic api.png"));
+            BufferedImage inputImageBuff = ImageIO.read(url.openStream());
+
+            ImageIcon inputImage;
+            if (inputImageBuff != null) {
+                inputImage = new ImageIcon(inputImageBuff.getScaledInstance(300, 200, Image.SCALE_SMOOTH));
+                // = new JLabel();
+                if (inputImage != null) {
+                    catpicLabel = new JLabel(inputImage);
+                } else {
+
+                    catpicLabel =new JLabel(new ImageIcon(ErrorImage.getScaledInstance(300, 200, Image.SCALE_SMOOTH)));
+
+                }
+                catPic.removeAll();
+                catPic.add(catpicLabel);
+                //mainFrame.add(imagePanel, BorderLayout.CENTER);
+
+            }
+            else{
+                catpicLabel =new JLabel(new ImageIcon(ErrorImage.getScaledInstance(800, 589, Image.SCALE_SMOOTH)));
+
+            }
+
+
+            //new
+//            catpicLabel.setIcon(catimageIcon);
+//            catPic.add(catpicLabel);
         }
         catch (IOException e){
             System.out.println(e);
@@ -299,12 +338,12 @@ public class ReadJson implements ActionListener{
         middlePanel.setLayout(new GridLayout(2, 1));
         choicePanel = new JPanel();
         choicePanel.setLayout(new GridLayout(1, 2));
-        catChoice = new JLabel("thing");
-        catChoice.setFont(new Font("Serif", Font.PLAIN, 14));
+        catChoice = new JLabel(" ");
+        catChoice.setFont(new Font("Serif", Font.PLAIN, 17));
         catChoice.setHorizontalAlignment(JLabel.CENTER);
         catChoice.setBorder(BorderFactory.createLineBorder(Color.black));
-        dogChoice = new JLabel("thing");
-        dogChoice.setFont(new Font("Serif", Font.PLAIN, 14));
+        dogChoice = new JLabel(" ");
+        dogChoice.setFont(new Font("Serif", Font.PLAIN, 17));
         dogChoice.setHorizontalAlignment(JLabel.CENTER);
         dogChoice.setBorder(BorderFactory.createLineBorder(Color.black));
         choicePanel.add(catChoice);
@@ -366,8 +405,11 @@ public class ReadJson implements ActionListener{
         catScoreLabel.setFont(new Font("Serif", Font.PLAIN, 17));
         catScoreLabel.setHorizontalAlignment(JLabel.CENTER);
         catScoreLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-        catScore = new JTextArea();
-        catScore.setBounds(50, 5, WIDTH-100, HEIGHT-50);
+        catScore = new JLabel("0");
+        catScore.setHorizontalAlignment(JLabel.CENTER);
+        catScore.setFont(new Font("Serif", Font.PLAIN, 30));
+
+        //catScore.setBounds(50, 5, WIDTH-100, HEIGHT-50);
         catScore.setText(Integer.toString(catsScore));
         catScore.setBorder(BorderFactory.createLineBorder(Color.black));
         catScorePanel.add(catScoreLabel);
@@ -380,7 +422,9 @@ public class ReadJson implements ActionListener{
         dogScoreLabel.setFont(new Font("Serif", Font.PLAIN, 17));
         dogScoreLabel.setHorizontalAlignment(JLabel.CENTER);
         dogScoreLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-        dogScore = new JTextArea();
+        dogScore = new JLabel("0");
+        dogScore.setHorizontalAlignment(JLabel.CENTER);
+        dogScore.setFont(new Font("Serif", Font.PLAIN, 30));
         dogScore.setBorder(BorderFactory.createLineBorder(Color.black));
         //dogScore.setBounds(50, 5, WIDTH-100, HEIGHT-50);
         dogScore.setText(Integer.toString(dogsScore));
@@ -398,6 +442,8 @@ public class ReadJson implements ActionListener{
 
         mf.setVisible(true);
     }
+
+
 
     private void showEventDemo() {
 
@@ -423,13 +469,13 @@ public class ReadJson implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == cut)
-            catScore.cut();
+            winner.cut();
         if (e.getSource() == paste)
-            catScore.paste();
+            winner.paste();
         if (e.getSource() == copy)
-            catScore.copy();
+            winner.copy();
         if (e.getSource() == selectAll)
-            catScore.selectAll();
+            winner.selectAll();
     }
 
     private class ButtonClickListener implements ActionListener {
@@ -444,6 +490,7 @@ public class ReadJson implements ActionListener{
                 try {
 
                     URL url = new URL("https://api.thecatapi.com/v1/images/search?limit=10");
+
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
                     conn.setRequestProperty("Accept", "application/json");
@@ -479,14 +526,97 @@ public class ReadJson implements ActionListener{
                     System.out.println(jsonObjectArray.get(0));
                     JSONObject newCat = (JSONObject) jsonObjectArray.get(0);
                     String catUrl = (String) newCat.get("url");
-                    System.out.println(catUrl);
 
-                    catCharacter.setText(catUrl);
+//                    int width = bimg.getWidth();
+//                    int height = bimg.getHeight();
+//                    System.out.println(catUrl);
+//                    System.out.println("height: " + catHeight);
+//                    System.out.println("width: " + catWidth);
+//                    int HWratio = catHeight/catWidth;
+//                    int WHratio = catWidth/catHeight;
+//                    if(catHeight>catWidth){
+//                        newcatheight = 500;
+//                        newcatwidth = 500*WHratio;
+//                    }else{
+//                        newcatwidth = 300;
+//                        newcatheight = 300*HWratio;
+//                    }
 
-                } catch (ParseException ea) {
+//                    BufferedImage img = ImageIO.read(new URL(catUrl));
+//                    catpicLabel.setIcon(new javax.swing.ImageIcon(img));
+
+                    //catCharacter.setText(catUrl);
+
+                    //new
+                    URL url = new URL(catUrl);
+                    BufferedImage ErrorImage = ImageIO.read(new File("cat pic api.png"));
+                    BufferedImage inputImageBuff = ImageIO.read(url.openStream());
+
+                    ImageIcon inputImage;
+                    if (inputImageBuff != null) {
+                        double width = inputImageBuff.getWidth();
+                        double height = inputImageBuff.getHeight();
+                        System.out.println(catUrl);
+//                        System.out.println("height: " + height);
+//                        System.out.println("width: " + width);
+                        double HWratio = height/width;
+                        double WHratio = width/height;
+//                        System.out.println(HWratio);
+//                        System.out.println(WHratio);
+
+                        if(height>width){
+                            newcatheight = 400;
+                            newcatwidth = (int)(400*WHratio);
+                        }else{
+                            newcatwidth = 260;
+                            newcatheight = (int)(260*HWratio);
+                        }
+                        inputImage = new ImageIcon(inputImageBuff.getScaledInstance(newcatwidth, newcatheight, Image.SCALE_SMOOTH));
+                        // = new JLabel();
+                        if (inputImage != null) {
+                            catpicLabel = new JLabel(inputImage);
+                        } else {
+
+                            catpicLabel =new JLabel(new ImageIcon(ErrorImage.getScaledInstance(300, 200, Image.SCALE_SMOOTH)));
+
+                        }
+                        catPic.removeAll();
+                        catPic.repaint();
+                        catPic.add(catpicLabel);
+                        //mainFrame.add(imagePanel, BorderLayout.CENTER);
+
+                    }
+                    else{
+                        catpicLabel =new JLabel(new ImageIcon(ErrorImage.getScaledInstance(300, 200, Image.SCALE_SMOOTH)));
+
+                    }
+
+                } catch (IOException u) {
+                    System.out.println(u);
+                    System.out.println("sadness");
+                    BufferedImage ErrorImage = null;
+                    try {
+                        ErrorImage = ImageIO.read(new File("cat pic api.png"));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    JLabel imageLabel = new JLabel(new ImageIcon(ErrorImage.getScaledInstance(300, 200, Image.SCALE_SMOOTH)));
+
+                    catPic.removeAll();
+                    catPic.add(imageLabel);
+                    //mainFrame.add(imagePanel);
+
+                }
+                 catch (ParseException ea) {
                     ea.printStackTrace();
                 }
+//                catch (IOException a) {
+//                    a.printStackTrace();
+//
+//                }
+
             }
+
 
             //dog api
             if(command.equals("new dog")) {
@@ -581,7 +711,56 @@ public class ReadJson implements ActionListener{
                     }
                     System.out.println(dog);
 
-                    dogCharacter.setText(dog);
+                    //dogCharacter.setText(dog);
+
+                    //new
+
+                    URL url = new URL(dog);
+
+                    BufferedImage ErrorImage = ImageIO.read(new File("dog pic api.png"));
+                    BufferedImage inputImageBuff = ImageIO.read(url.openStream());
+
+
+                    ImageIcon inputImage;
+                    if (inputImageBuff != null) {
+                        double width = inputImageBuff.getWidth();
+                        double height = inputImageBuff.getHeight();
+//                        System.out.println("height: " + height);
+//                        System.out.println("width: " + width);
+                        double HWratio = height/width;
+                        double WHratio = width/height;
+//                        System.out.println(HWratio);
+//                        System.out.println(WHratio);
+                        if(height>width){
+                            newdogheight = 400;
+                            newdogwidth = (int)(400*WHratio);
+                            //System.out.println(newdogwidth);
+                        }else{
+                            newdogwidth = 260;
+                            newdogheight = (int)(260*HWratio);
+                            //System.out.println(newdogheight);
+                        }
+                        inputImage = new ImageIcon(inputImageBuff.getScaledInstance(newdogwidth, newdogheight, Image.SCALE_SMOOTH));
+                        // = new JLabel();
+                        if (inputImage != null) {
+                            dogpicLabel = new JLabel(inputImage);
+                        } else {
+
+                            dogpicLabel =new JLabel(new ImageIcon(ErrorImage.getScaledInstance(300, 200, Image.SCALE_SMOOTH)));
+
+                        }
+                        dogPic.removeAll();
+                        dogPic.repaint();
+                        dogPic.add(dogpicLabel);
+                        //mainFrame.add(imagePanel, BorderLayout.CENTER);
+
+                    }
+                    else{
+                        dogpicLabel =new JLabel(new ImageIcon(ErrorImage.getScaledInstance(300, 200, Image.SCALE_SMOOTH)));
+
+                    }
+
+                    //end new
 
 
                 } catch (Exception a) {
@@ -642,7 +821,7 @@ public class ReadJson implements ActionListener{
 
             }
 
-
+            mf.setVisible(true);
         }
     }
 }
